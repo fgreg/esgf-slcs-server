@@ -1,0 +1,4 @@
+include *.txt *.md *.py
+recursive-include esgf_auth *.py
+recursive-include esgf_slcs_server *.py
+recursive-include onlineca *.py
