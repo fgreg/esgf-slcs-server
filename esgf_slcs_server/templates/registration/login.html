@@ -1,0 +1,35 @@
+{% extends "esgf_base.html" %}
+
+{% block content %}
+    <div class="block-center">
+        <form class="form-horizontal" method="post" action="">
+            <h3 class="block-center-heading">Login with ESGF account</h3>
+
+            {% csrf_token %}
+
+            <div class="control-group {% if form.non_field_errors %}error{% endif %}">
+                {% for error in form.non_field_errors %}
+                    <span class="help-inline">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            {% for field in form %}
+                <div class="control-group {% if field.errors %}error{% endif %}">
+                    <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <div class="controls">
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <span class="help-inline">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

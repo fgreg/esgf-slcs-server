@@ -10,11 +10,15 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 from oauth2_provider import views as oauth_views
 
 
 urlpatterns = [
+    url(r'^$',
+        TemplateView.as_view(template_name = 'esgf_slcs_server/incorrect_usage.html'),
+        name = 'home'),
     url(r'^admin/', admin.site.urls),
     # Use the built-in authentication views for login and logout
     url(r'^accounts/login$', auth_views.login, name = 'accounts_login'),

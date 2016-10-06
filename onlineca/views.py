@@ -45,7 +45,12 @@ def certificate(request):
     if not request.user.is_authenticated():
         return HttpResponseForbidden()
     # Convert the user to an OpenID using the specified function
-    request.environ['OPENID'] = settings.ONLINECA_DJANGO_USER_TO_OPENID(request.user)
+    if callable(settings.ONLINECA_DJANGO_USER_TO_OPENID):
+        converter = settings.ONLINECA_DJANGO_USER_TO_OPENID
+    else:
+        from django.utils.module_loading import import_string
+        converter = import_string(settings.ONLINECA_DJANGO_USER_TO_OPENID)
+    request.environ['OPENID'] = converter(request.user)
     return call_wsgi_app(onlineca_app, request, '/certificate/')
 
 
