@@ -11,6 +11,9 @@ Certificates can be obtained using two authentication methods:
 The OAuth2 support allows a 3rd party service to obtain permission from a user to
 obtain a certificate on their behalf without having to know the user's password.
 
+An example client demonstrating the SLCS functionality using OAuth is
+[also available on Github](https://github.com/cedadev/esgf-slcs-client-example).
+
 The ESGF SLCS server is a Django application that utilises a number of other useful packages:
 
   * The "certificate authority over HTTP" functionality is provided by the
