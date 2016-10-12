@@ -28,6 +28,7 @@ requires = [
     'django-wsgi',
     'ContrailOnlineCAService',
     'PasteDeploy',
+    'django-bootstrap3',
 ]
 
 if __name__ == "__main__":

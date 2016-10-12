@@ -1,1 +1,117 @@
-{% extends "oauth2_provider/base.html" %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>ESGF SLCS Service</title>
+
+        {% block stylesheets %}
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="{% static "esgf_slcs_server/css/esgf.css" %}" />
+        {% block stylesheets_extra %}{% endblock %}
+        {% endblock %}
+
+        {% block head_js %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="{% static "esgf_slcs_server/js/cookielaw.js" %}"></script>
+        {% block head_js_extra %}{% endblock %}
+        <!--[if lt IE 9]>
+            <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+            <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        {% endblock %}
+
+        {% block head_extra %}{% endblock %}
+    </head>
+
+    <body id="{% block body_id %}body{% endblock %}">
+        <div class="container-fluid">
+            <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed"
+                                data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+                            <span class="sr-only">Toggle Navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">
+                            <img src="{% static "esgf_slcs_server/img/esgf.png" %}" />
+                            <span>Short-Lived Credential Service</span>
+                        </a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        {% if user.is_authenticated %}
+                            <p class="navbar-text navbar-right">
+                                Signed in as {{ user.username }}
+                                (<a href="{% url 'accounts_logout' %}">sign out</a>)
+                            </p>
+                        {% else %}
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a href="{% url 'accounts_login' %}">Sign in</a></li>
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+
+            <div id="content-main" class="container">
+                {% if 'cookielaw_accepted' not in request.COOKIES %}
+                    <div id="cookielaw_banner">
+                        {% include "cookielaw/banner_content.html" %}
+                    </div>
+                    <script>
+                        if( Cookielaw.hasCookie() ) $('#cookielaw_banner').hide();
+                    </script>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="page-header">{% block page_title %}{% endblock %}</h1>
+                    </div>
+                </div>
+
+                {% block notifications %}
+                    {% if messages %}
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                {% for message in messages %}
+                                    {% if 'success' in message.tags %}
+                                        <div class="alert alert-with-icon alert-success" role="alert">{{ message }}</div>
+                                    {% elif 'error' in message.tags %}
+                                        <div class="alert alert-with-icon alert-danger" role="alert">{{ message }}</div>
+                                    {% elif 'warning' in message.tags %}
+                                        <div class="alert alert-with-icon alert-warning" role="alert">{{ message }}</div>
+                                    {% else %}
+                                        <div class="alert alert-with-icon alert-info" role="alert">{{ message }}</div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endblock %}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="container">
+                <div class="col-md-12">Earth System Grid Federation</div>
+            </div>
+        </footer>
+
+        {% block footer_js %}
+        {% endblock %}
+    </body>
+</html>

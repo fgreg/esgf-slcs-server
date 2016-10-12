@@ -1,0 +1,43 @@
+{% extends "esgf_base.html" %}
+
+{% block page_title %}Authorize application{% endblock %}
+
+{% block content %}
+    <div class="col-md-6 col-md-offset-3">
+        {% if not error %}
+            <form id="authorizationForm" method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>{{ application.name }}</strong> is requesting the following permissions:</div>
+                    <div class="panel-body">
+                        <ul>
+                            {% for scope in scopes_descriptions %}
+                                <li>{{ scope }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="panel-footer clearfix">
+                        <div class="pull-right">
+                            <input type="submit" class="btn btn-large btn-default" value="Cancel" />
+                            <input type="submit" class="btn btn-large btn-primary" name="allow" value="Authorize" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        {% else %}
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Error: {{ error.error }}</h3>
+                </div>
+                <div class="panel-body">{{ error.description }}</div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
