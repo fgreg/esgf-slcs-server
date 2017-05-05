@@ -25,11 +25,7 @@ requires = [
     # For the time being, this is required by django_wsgi
     'django<1.10',
     'django-oauth-toolkit',
-    # The following error occurs with 2.7, but not with 2.6.x
-    # django.db.utils.OperationalError: could not connect to server: No such file or directory
-	#     Is the server running locally and accepting
-	#     connections on Unix domain socket "/var/run/postgresql/.s.PGSQL.5432"?
-    'psycopg2<2.7',
+    'psycopg2',
     'django-wsgi',
     'ContrailOnlineCAService',
     'PasteDeploy',
