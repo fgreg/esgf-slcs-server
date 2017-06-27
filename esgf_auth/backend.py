@@ -7,10 +7,12 @@ ESGF user database.
 __author__ = "Matt Pryor"
 __copyright__ = "Copyright 2016 UK Science and Technology Facilities Council"
 
+from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.db import connections
 from passlib.hash import md5_crypt
+from psycopg2 import sql
 
 
 class EsgfUserBackend(ModelBackend):
@@ -26,8 +28,8 @@ class EsgfUserBackend(ModelBackend):
         # Try to retrieve a row from the ESGF user database with the given
         # username and password
         with connections['userdb'].cursor() as cursor:
-            cursor.execute('SELECT password FROM esgf_security.user '
-                           'WHERE username = %s', [username])
+            cursor.execute(sql.SQL("SELECT password FROM {} WHERE username = %s")
+                           .format(sql.Identifier(settings.ESGF_USERDB_USER_TABLE)), [username])
             row = cursor.fetchone()
 
             # Check if user exists
