@@ -10,6 +10,7 @@ __copyright__ = "Copyright 2016 UK Science and Technology Facilities Council"
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.db import connections
+from passlib.hash import md5_crypt
 
 
 class EsgfUserBackend(ModelBackend):
@@ -25,9 +26,17 @@ class EsgfUserBackend(ModelBackend):
         # Try to retrieve a row from the ESGF user database with the given
         # username and password
         with connections['userdb'].cursor() as cursor:
-            cursor.execute('SELECT * FROM esgf_security.user '
-                           'WHERE username = %s AND password = MD5(%s)', (username, password))
-            has_esgf_user = cursor.fetchone() is not None
+            cursor.execute('SELECT password FROM esgf_security.user '
+                           'WHERE username = %s', [username])
+            row = cursor.fetchone()
+
+            # Check if user exists
+            if row is not None:
+                # Verify password matches
+                has_esgf_user = md5_crypt.verify(password, row[0])
+            else:
+                has_esgf_user = False
+
         # If there is no ESGF user matching the username/password, we are done
         if not has_esgf_user:
             return None
