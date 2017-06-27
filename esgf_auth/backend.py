@@ -19,17 +19,20 @@ class EsgfUserBackend(ModelBackend):
     """
     Django authentication backend that authenticates users using the ESGF user database.
     """
-    def authenticate(self, username = None, password = None, **kwargs):
+
+    def authenticate(self, username=None, password=None, **kwargs):
         """
         Attempt to authenticate the given username/password combination.
         """
         if not username or not password:
             return None
-        # Try to retrieve a row from the ESGF user database with the given
-        # username and password
+        #  Try to retrieve a row from the ESGF user database with the given
+        #  username and password
         with connections['userdb'].cursor() as cursor:
-            cursor.execute(sql.SQL("SELECT password FROM {} WHERE username = %s")
-                           .format(sql.Identifier(settings.ESGF_USERDB_USER_TABLE)), [username])
+            cursor.execute(sql.SQL("SELECT password FROM {}.{} WHERE username = %s")
+                           .format(sql.Identifier(settings.ESGF_USERDB_USER_SCHEMA),
+                                   sql.Identifier(settings.ESGF_USERDB_USER_TABLE)),
+                           [username])
             row = cursor.fetchone()
 
             # Check if user exists
@@ -39,14 +42,14 @@ class EsgfUserBackend(ModelBackend):
             else:
                 has_esgf_user = False
 
-        # If there is no ESGF user matching the username/password, we are done
+        #  If there is no ESGF user matching the username/password, we are done
         if not has_esgf_user:
             return None
-        # Otherwise, return the user object associated with the username, creating
-        # one if required
-        # Note that we don't use get_or_create as we want to use create_user
+        #  Otherwise, return the user object associated with the username, creating
+        #  one if required
+        #  Note that we don't use get_or_create as we want to use create_user
         User = get_user_model()
         try:
-            return User.objects.get(username = username)
+            return User.objects.get(username=username)
         except User.DoesNotExist:
             return User.objects.create_user(username)
